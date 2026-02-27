@@ -14,30 +14,99 @@
     }
     .card {
       text-align: center;
-      padding: 20px 40px;
-      border-radius: 12px;
+      padding: 10px 20px;
+      border-radius: 8px;
       background: #f7f6f3;
       border: 1px solid #e5e4e0;
     }
-    .label { font-size: 13px; color: #9b9a97; text-transform: uppercase; letter-spacing: 1px; }
-    .date  { font-size: 16px; color: #37352f; margin: 4px 0 12px; font-weight: 500; }
-    .count { font-size: 52px; font-weight: 700; color: #e03e3e; line-height: 1; }
-    .unit  { font-size: 14px; color: #9b9a97; margin-top: 6px; }
+    .label { font-size: 10px; color: #9b9a97; text-transform: uppercase; letter-spacing: 1px; }
+    .date  { font-size: 12px; color: #37352f; margin: 2px 0 8px; font-weight: 500; }
+
+    .count-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .bloc { display: flex; flex-direction: column; align-items: center; }
+    .num  { font-size: 26px; font-weight: 700; color: #e03e3e; line-height: 1; min-width: 32px; }
+    .sub  { font-size: 9px; color: #9b9a97; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+
+    .hms-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 2px;
+      margin-top: 6px;
+      border-top: 1px solid #e5e4e0;
+      padding-top: 6px;
+    }
+    .hms-bloc { display: flex; flex-direction: column; align-items: center; }
+    .hms-num  { font-size: 13px; font-weight: 600; color: #6b6b6b; line-height: 1; min-width: 19px; }
+    .hms-sep  { font-size: 11px; font-weight: 600; color: #9b9a97; line-height: 1; margin-top: 1px; }
+    .hms-sub  { font-size: 8px; color: #b0afad; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
   </style>
 </head>
 <body>
   <div class="card">
     <div class="label">Soutenance</div>
     <div class="date">03 avril 2026</div>
-    <div class="count" id="days">--</div>
-    <div class="unit">jours restants</div>
+
+    <div class="count-row">
+      <div class="bloc">
+        <div class="num" id="days">--</div>
+        <div class="sub">jours</div>
+      </div>
+    </div>
+
+    <div class="hms-row">
+      <div class="hms-bloc">
+        <div class="hms-num" id="hours">--</div>
+        <div class="hms-sub">h</div>
+      </div>
+      <div class="hms-sep">:</div>
+      <div class="hms-bloc">
+        <div class="hms-num" id="minutes">--</div>
+        <div class="hms-sub">min</div>
+      </div>
+      <div class="hms-sep">:</div>
+      <div class="hms-bloc">
+        <div class="hms-num" id="seconds">--</div>
+        <div class="hms-sub">sec</div>
+      </div>
+    </div>
   </div>
+
   <script>
-    const target = new Date('2026-04-03');
-    const today  = new Date();
-    today.setHours(0, 0, 0, 0);
-    const diff = Math.ceil((target - today) / (1000 * 60 * 60 * 24));
-    document.getElementById('days').textContent = diff > 0 ? diff : '🎓';
+    const target = new Date('2026-04-03T09:00:00');
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function update() {
+      const now  = new Date();
+      const diff = target - now;
+
+      if (diff <= 0) {
+        document.getElementById('days').textContent    = '🎓';
+        document.getElementById('hours').textContent   = '00';
+        document.getElementById('minutes').textContent = '00';
+        document.getElementById('seconds').textContent = '00';
+        return;
+      }
+
+      const totalSeconds = Math.floor(diff / 1000);
+      const days    = Math.floor(totalSeconds / 86400);
+      const hours   = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      document.getElementById('days').textContent    = days;
+      document.getElementById('hours').textContent   = pad(hours);
+      document.getElementById('minutes').textContent = pad(minutes);
+      document.getElementById('seconds').textContent = pad(seconds);
+    }
+
+    update();
+    setInterval(update, 1000);
   </script>
 </body>
 </html>
